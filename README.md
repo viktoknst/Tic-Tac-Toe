@@ -1,5 +1,3 @@
-This is the developement branch for the game.
-
 This is a TicTacToe game created in python which has two gamemodes - multiplayer and singleplayer.
 
 Features:
