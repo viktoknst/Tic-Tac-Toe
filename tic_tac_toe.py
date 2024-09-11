@@ -2,24 +2,32 @@ import tkinter as tk
 from tkinter import font
 from typing import NamedTuple
 from itertools import cycle
+from enum import Enum
 
-#hello
+#TODO label enum, doc string
+
+
+class Label(Enum):
+    X = "X"
+    O = "O"
+    NONE = 0
+
 
 class Player(NamedTuple):
-    label: str
+    label: Label
     color: str
 
 
 class Move(NamedTuple):
     row: int
     col: int
-    label: str = ""
+    label: Label = Label.NONE
 
 
 BOARD_SIZE = 3
 DEFAULT_PLAYERS = (
-    Player(label="X", color="gray"),
-    Player(label="O", color="gold")
+    Player(label=Label.O, color="green"),
+    Player(label=Label.X, color="gold")
 )
 
 
@@ -77,7 +85,7 @@ class TicTacToeGame:
 
     def is_valid_move(self, move):
         row, col = move.row, move.col
-        move_was_not_played = self._current_moves[row][col].label == ""
+        move_was_not_played = self._current_moves[row][col].label == Label.NONE
         no_winner = not self._has_winner
 
         return no_winner and move_was_not_played
@@ -93,7 +101,7 @@ class TicTacToeGame:
             for n, m in combo:
                 results.add(self._current_moves[n][m].label)
 
-            is_win = (len(results) == 1) and ("" not in results)
+            is_win = (len(results) == 1) and (Label.NONE not in results)
 
             if is_win:
                 self._has_winner = True
@@ -111,7 +119,7 @@ class TicTacToeGame:
 
         for row in self._current_moves:
             for move in row:
-                played_moves.append(move.label)
+                played_moves.append(move.label != Label.NONE)
 
         return no_winner and all(played_moves)
     
@@ -157,7 +165,7 @@ class TikTacToeBoard(tk.Tk):
                     font=font.Font(size=36, weight="bold"),
                     fg="black",
                     height=2,
-                    width=4,
+                    width=5,
                     highlightbackground="lightblue"
                 )
 
@@ -181,23 +189,24 @@ class TikTacToeBoard(tk.Tk):
             self._update_button(clicked_btn)
             self._game.process_move(move)
 
-            if self._game.is_tied():
-                self._update_display(msg="Tied game!", color="red")
-
-            elif self._game.has_winner():
+            if self._game.has_winner():
                 self._highlight_cells()
-                msg = f'Player "{self._game.current_player.label}" won!'
+                msg = f'Player "{self._game.current_player.label.value}" won!'
                 color = self._game.current_player.color
                 self._update_display(msg, color)
+                return
 
-            else:
-                self._game.toggle_player()
-                msg = f"{self._game.current_player.label}'s turn"
-                self._update_display(msg)
+            if self._game.is_tied():
+                self._update_display(msg="Tied game!", color="red")
+                return
+
+            self._game.toggle_player()
+            msg = f"{self._game.current_player.label.value}'s turn"
+            self._update_display(msg)
             
     
     def _update_button(self, clicked_btn):
-        clicked_btn.config(text=self._game.current_player.label)
+        clicked_btn.config(text=self._game.current_player.label.value)
         clicked_btn.config(fg=self._game.current_player.color)
 
     
