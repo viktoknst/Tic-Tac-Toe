@@ -4,9 +4,6 @@ from typing import NamedTuple
 from itertools import cycle
 from enum import Enum
 
-#TODO doc string
-
-
 class Label(Enum):
     X = "X"
     O = "O"
@@ -44,6 +41,8 @@ class TicTacToeGame:
 
     
     def _setup_board(self):
+        # This function sets up the internal representation of the board as a 2D grid of Move objects.
+        # It also precomputes all possible ways a player can win, which will be used later to check for winning conditions during the game.
         self._current_moves = []
 
         for row in range(self.board_size):
@@ -58,6 +57,8 @@ class TicTacToeGame:
 
 
     def _get_winning_combos(self):
+        # This function provides all the possible ways a player can win in the game.
+        # zip(*rows) transposes the rows, turning them into columns. It pairs up elements from the same index across all rows, effectively forming the columns of the board.
         rows = []
 
         for row in self._current_moves:
@@ -82,7 +83,7 @@ class TicTacToeGame:
 
         return rows + columns + [first_diagonal, second_diagonal]
     
-
+    #TODO Fix valid function!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     def is_valid_move(self, move):
         row, col = move.row, move.col
         move_was_not_played = self._current_moves[row][col].label == Label.NONE
@@ -92,6 +93,7 @@ class TicTacToeGame:
     
 
     def process_move(self, move):
+        # The process_move function performs several key tasks: Update the board, check all possible winning combinations and update the game state.
         row, col = move.row, move.col
         self._current_moves[row][col] = move
         
@@ -101,9 +103,7 @@ class TicTacToeGame:
             for n, m in combo:
                 results.add(self._current_moves[n][m].label)
 
-            is_win = (len(results) == 1) and (Label.NONE not in results)
-
-            if is_win:
+            if len(results) == 1 and (Label.NONE not in results):
                 self._has_winner = True
                 self.winner_combo = combo
                 break
@@ -114,6 +114,7 @@ class TicTacToeGame:
     
 
     def is_tied(self):
+        # Checks if the game has finished in a tie
         no_winner = not self._has_winner
         played_moves = []
 
@@ -129,6 +130,7 @@ class TicTacToeGame:
 
     
     def reset_game(self):
+        # Resets the board and win condition values such as _has_winner and winner_combo and sets new clear values to row_content.
         for row, row_content in enumerate(self._current_moves):
             for col, _ in enumerate(row_content):
                 row_content[col] = Move(row, col)
@@ -149,6 +151,7 @@ class TikTacToeBoard(tk.Tk):
 
     
     def _create_board_display(self):
+        # Creates the window for the game.
         display_frame = tk.Frame(master=self)
         display_frame.pack(fill=tk.X)
         self.display= tk.Label(
@@ -161,6 +164,7 @@ class TikTacToeBoard(tk.Tk):
 
     
     def _create_board_grid(self):
+        # Creates the grid made out of buttons.
         grid_frame = tk.Frame(master=self)
         grid_frame.pack()
 
@@ -192,6 +196,7 @@ class TikTacToeBoard(tk.Tk):
 
 
     def _create_menu(self):
+        # Creates the drop down menu with the "Play again" and "Exit" functions.
         menu_bar = tk.Menu(master=self)
         self.config(menu=menu_bar)
         file_menu = tk.Menu(master=menu_bar)
@@ -207,6 +212,13 @@ class TikTacToeBoard(tk.Tk):
 
 
     def play(self, event):
+        # The play function is the core game controller that handles:
+        #
+        #     - User interaction when clicking on the board.
+        #     - Validating and processing moves.
+        #     - Checking for a win or tie.
+        #     - Updating the game display to reflect the current state of the game (next player's turn, a win, or a tie).
+
         clicked_btn = event.widget
         row, col = self._cells[clicked_btn]
         move = Move(row, col, self._game.current_player.label)
@@ -232,22 +244,26 @@ class TikTacToeBoard(tk.Tk):
             
     
     def _update_button(self, clicked_btn):
+        # Updates the buttons so they show their new label
         clicked_btn.config(text=self._game.current_player.label.value)
         clicked_btn.config(fg=self._game.current_player.color)
 
     
     def _update_display(self, msg, color="black"):
+        # Updates messages
         self.display["text"] = msg
         self.display["fg"] = color
 
     
     def _highlight_cells(self):
+        # At the end of the game the winning cells are highlighted. This function is responsible for that.
         for button, coordinates in self._cells.items():
             if coordinates in self._game.winner_combo:
                 button.config(highlightbackground="black")
             
 
     def reset_board(self):
+        # Resets the board after "Play again" has been selected in the menu.
         self._game.reset_game()
         self._update_display(msg="Ready?")
 
