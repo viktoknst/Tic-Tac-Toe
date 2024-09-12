@@ -82,14 +82,16 @@ class TicTacToeGame:
             second_diagonal.append(col[j])
 
         return rows + columns + [first_diagonal, second_diagonal]
+
     
-    #TODO Fix valid function!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     def is_valid_move(self, move):
         row, col = move.row, move.col
-        move_was_not_played = self._current_moves[row][col].label == Label.NONE
+    
+        within_bounds = 0 <= row < self.board_size and 0 <= col < self.board_size
+        move_was_not_played = within_bounds and self._current_moves[row][col].label == Label.NONE
         no_winner = not self._has_winner
-
-        return no_winner and move_was_not_played
+    
+        return within_bounds and no_winner and move_was_not_played
     
 
     def process_move(self, move):

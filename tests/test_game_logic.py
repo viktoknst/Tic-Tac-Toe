@@ -104,6 +104,24 @@ class TestGame():
         assert game.is_tied() == True
 
 
+    def test_is_valid_move(self):
+            game = TicTacToeGame(board_size=3)
+            game._setup_board()
+
+            moves = [
+                Move(0, 0, Label.O), Move(0, 1, Label.X), Move(0, 2, Label.O),
+                Move(1, 0, Label.X), Move(1, 1, Label.O), Move(1, 2, Label.X),
+                Move(2, 0, Label.X), Move(2, 1, Label.O), Move(2, 2, Label.X)
+            ]
+
+            for move in moves:
+                game.process_move(move)
+
+            move_to_play = Move(row=0, col=0, label=Label.X)
+
+            assert game.is_valid_move(move_to_play) == False
+
+
     def test_is_tied(self):
         game = TicTacToeGame(board_size=3)
         game._setup_board()
