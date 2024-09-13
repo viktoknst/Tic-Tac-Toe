@@ -103,6 +103,25 @@ class TestGame():
         assert not game.has_winner()
         assert game.is_tied() == True
 
+    
+    def test_has_winner_initial_state(self):
+        game = TicTacToeGame(board_size=3)
+        game._setup_board()
+        assert game.has_winner() is False
+
+
+    def test_has_winner_after_winning_move(game):
+        game = TicTacToeGame(board_size=3)
+        game._setup_board()
+
+        game._current_moves[0][0] = Move(0, 0, Label.X)
+        game._current_moves[0][1] = Move(0, 1, Label.X)
+        game._current_moves[0][2] = Move(0, 2, Label.X)
+
+        game._has_winner = True
+
+        assert game.has_winner() is True
+
 
     def test_is_tied(self):
         game = TicTacToeGame(board_size=3)
