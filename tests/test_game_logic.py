@@ -4,7 +4,7 @@ File that tests functions from tic_tac_toe.py.
 
 import sys
 sys.path.append('/home/vkonstantinov/Tic_tac_toe')
-from tic_tac_toe import TicTacToeGame, Move, Label
+from Tic_tac_toe.tic_tac_toe import TicTacToeGame, Move, Label
 import pytest
 
 class TestGame():
