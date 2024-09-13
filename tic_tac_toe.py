@@ -82,16 +82,6 @@ class TicTacToeGame:
             second_diagonal.append(col[j])
 
         return rows + columns + [first_diagonal, second_diagonal]
-
-    
-    def is_valid_move(self, move):
-        row, col = move.row, move.col
-    
-        within_bounds = 0 <= row < self.board_size and 0 <= col < self.board_size
-        move_was_not_played = within_bounds and self._current_moves[row][col].label == Label.NONE
-        no_winner = not self._has_winner
-    
-        return within_bounds and no_winner and move_was_not_played
     
 
     def process_move(self, move):
@@ -223,9 +213,10 @@ class TikTacToeBoard(tk.Tk):
 
         clicked_btn = event.widget
         row, col = self._cells[clicked_btn]
-        move = Move(row, col, self._game.current_player.label)
 
-        if self._game.is_valid_move(move):
+        if self._game._current_moves[row][col].label == Label.NONE and not self._game._has_winner:
+            move = Move(row, col, self._game.current_player.label)
+
             self._update_button(clicked_btn)
             self._game.process_move(move)
 
