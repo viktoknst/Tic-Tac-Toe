@@ -7,7 +7,7 @@ from enum import Enum
 class Label(Enum):
     X = "X"
     O = "O"
-    NONE = 0
+    NONE = ""
 
 
 class Player(NamedTuple):
@@ -213,8 +213,9 @@ class TikTacToeBoard(tk.Tk):
 
         clicked_btn = event.widget
         row, col = self._cells[clicked_btn]
+        is_free_spot = self._game._current_moves[row][col].label == Label.NONE
 
-        if self._game._current_moves[row][col].label == Label.NONE and not self._game._has_winner:
+        if is_free_spot and not self._game._has_winner:
             move = Move(row, col, self._game.current_player.label)
 
             self._update_button(clicked_btn)
