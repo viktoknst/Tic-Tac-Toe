@@ -1,6 +1,7 @@
 from src.app.definitions import DEFAULT_PLAYERS, BOARD_SIZE, Move, Label
 from itertools import cycle
 
+
 class TicTacToeGame:
     def __init__(self, players=DEFAULT_PLAYERS, board_size=BOARD_SIZE):
         self._players = cycle(players)
@@ -40,9 +41,11 @@ class TicTacToeGame:
             second_diagonal.append(col[j])
 
         return rows + columns + [first_diagonal, second_diagonal]
-    
+
     def process_move(self, move):
-        # The process_move function performs several key tasks: Update the board, check all possible winning combinations and update the game state.
+        # The process_move function performs several key tasks:
+        # Update the board, check all possible winning combinations
+        # and update the game state.
         row, col = move.row, move.col
         self._current_moves[row][col] = move
         for combo in self._winning_combos:
@@ -56,7 +59,7 @@ class TicTacToeGame:
 
     def has_winner(self):
         return self._has_winner
-    
+
     def is_tied(self):
         # Checks if the game has finished in a tie
         no_winner = not self._has_winner
@@ -66,12 +69,13 @@ class TicTacToeGame:
                 played_moves.append(move.label != Label.NONE)
 
         return no_winner and all(played_moves)
-    
+
     def toggle_player(self):
         self.current_player = next(self._players)
 
     def reset_game(self):
-        # Resets the board and win condition values such as _has_winner and winner_combo and sets new clear values to row_content.
+        # Resets the board and win condition values such as _has_winner
+        # and winner_combo and sets new clear values to row_content.
         for row, row_content in enumerate(self._current_moves):
             for col, _ in enumerate(row_content):
                 row_content[col] = Move(row, col)

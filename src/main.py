@@ -8,7 +8,8 @@ def main():
     game = TicTacToeGame()
     board = TikTacToeBoard(game)
     uri = "ws://localhost:8000/ws"
-    threading.Thread(target=lambda: asyncio.run(board.connect_to_server(uri))).start()
+    threading.Thread(target=lambda:
+                     asyncio.run(board.connect_to_server(uri))).start()
     board.mainloop()
 
 

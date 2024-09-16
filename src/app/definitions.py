@@ -3,8 +3,8 @@ from enum import Enum
 
 
 class Label(Enum):
-    X = "X"
-    O = "O"
+    x = "X"
+    o = "O"
     NONE = ""
 
 
@@ -21,6 +21,6 @@ class Move(NamedTuple):
 
 BOARD_SIZE = 3
 DEFAULT_PLAYERS = (
-    Player(label=Label.O, color="green"),
-    Player(label=Label.X, color="gold")
+    Player(label=Label.o, color="green"),
+    Player(label=Label.x, color="gold")
 )

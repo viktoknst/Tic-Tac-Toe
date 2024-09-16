@@ -45,9 +45,9 @@ class TikTacToeBoard(tk.Tk):
                 self._cells[button] = (row, col)
                 button.bind("<ButtonPress-1>", self.play)
                 button.grid(row=row, column=col, padx=5, pady=5, sticky="nsew")
-    
+
     def _create_menu(self):
-        # Creates the drop down menu with the "Play again" and "Exit" functions.
+        # Creates the drop down menu
         menu_bar = tk.Menu(master=self)
         self.config(menu=menu_bar)
         file_menu = tk.Menu(master=menu_bar)
@@ -62,7 +62,8 @@ class TikTacToeBoard(tk.Tk):
         #     - User interaction when clicking on the board.
         #     - Validating and processing moves.
         #     - Checking for a win or tie.
-        #     - Updating the game display to reflect the current state of the game (next player's turn, a win, or a tie).
+        #     - Updating the game display to reflect the current state
+        #       of the game (next player's turn, a win, or a tie).
 
         clicked_btn = event.widget
         row, col = self._cells[clicked_btn]
@@ -88,7 +89,7 @@ class TikTacToeBoard(tk.Tk):
             self._game.toggle_player()
             msg = f"{self._game.current_player.label.value}'s turn"
             self._update_display(msg)
-            
+
     def _update_button(self, clicked_btn):
         # Updates the buttons so they show their new label
         clicked_btn.config(text=self._game.current_player.label.value)
@@ -100,11 +101,12 @@ class TikTacToeBoard(tk.Tk):
         self.display["fg"] = color
 
     def _highlight_cells(self):
-        # At the end of the game the winning cells are highlighted. This function is responsible for that.
+        # At the end of the game the winning cells are highlighted.
+        # This function is responsible for that.
         for button, coordinates in self._cells.items():
             if coordinates in self._game.winner_combo:
                 button.config(highlightbackground="black")
-            
+
     def reset_board(self):
         # Resets the board after "Play again" has been selected in the menu.
         self._game.reset_game()
@@ -120,7 +122,9 @@ class TikTacToeBoard(tk.Tk):
 
     async def send_move(self, move):
         if self.websocket:
-            await self.websocket.send(f"{move.row},{move.col},{move.label.value}")
+            await self.websocket.send(
+                f"{move.row},{move.col},{move.label.value}"
+            )
 
     async def receive_move(self):
         while True:
@@ -134,4 +138,6 @@ class TikTacToeBoard(tk.Tk):
                 if r == row and c == col:
                     self._update_button(button)
             self._game.toggle_player()
-            self._update_display(f"{self._game.current_player.label.value}'s turn")
+            self._update_display(
+                f"{self._game.current_player.label.value}'s turn"
+            )
