@@ -1,10 +1,11 @@
 '''
-File that tests functions from tic_tac_toe.py.
+File that tests functions from app
 '''
 
 import sys
 sys.path.append('/home/vkonstantinov/Tic_tac_toe')
-from Tic_tac_toe.tic_tac_toe import TicTacToeGame, Move, Label
+from src.app.tic_tac_toe_game import TicTacToeGame
+from src.app.definitions import Move, Label
 import pytest
 
 class TestGame():
