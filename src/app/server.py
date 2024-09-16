@@ -3,6 +3,7 @@ from typing import List
 
 app = FastAPI()
 
+
 class ConnectionManager:
     def __init__(self):
         self.active_connections: List[WebSocket] = []
@@ -21,7 +22,9 @@ class ConnectionManager:
         for connection in self.active_connections:
             await connection.send_text(message)
 
+
 manager = ConnectionManager()
+
 
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):

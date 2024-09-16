@@ -1,14 +1,15 @@
-'''
+"""
 File that tests functions from app
-'''
+"""
 
 import sys
 from src.app.tic_tac_toe_game import TicTacToeGame
 from src.app.definitions import Move, Label
-sys.path.append('/home/vkonstantinov/Tic_tac_toe')
+
+sys.path.append("/home/vkonstantinov/Tic_tac_toe")
 
 
-class TestGame():
+class TestGame:
     def test_setup_board(self):
         game = TicTacToeGame(board_size=3)
         game._setup_board()
@@ -50,15 +51,13 @@ class TestGame():
             [(0, 0), (0, 1), (0, 2)],
             [(1, 0), (1, 1), (1, 2)],
             [(2, 0), (2, 1), (2, 2)],
-
             # Columns
             [(0, 0), (1, 0), (2, 0)],
             [(0, 1), (1, 1), (2, 1)],
             [(0, 2), (1, 2), (2, 2)],
-
             # Diagonals
             [(0, 0), (1, 1), (2, 2)],
-            [(0, 2), (1, 1), (2, 0)]
+            [(0, 2), (1, 1), (2, 0)],
         ]
 
         assert winning_combos == expected_combos
@@ -89,9 +88,15 @@ class TestGame():
         game._setup_board()
 
         moves = [
-            Move(0, 0, Label.O), Move(0, 1, Label.X), Move(0, 2, Label.O),
-            Move(1, 0, Label.X), Move(1, 1, Label.O), Move(1, 2, Label.X),
-            Move(2, 0, Label.X), Move(2, 1, Label.O), Move(2, 2, Label.X)
+            Move(0, 0, Label.O),
+            Move(0, 1, Label.X),
+            Move(0, 2, Label.O),
+            Move(1, 0, Label.X),
+            Move(1, 1, Label.O),
+            Move(1, 2, Label.X),
+            Move(2, 0, Label.X),
+            Move(2, 1, Label.O),
+            Move(2, 2, Label.X),
         ]
 
         for move in moves:
@@ -122,9 +127,15 @@ class TestGame():
         game._setup_board()
 
         moves = [
-            Move(0, 0, Label.O), Move(0, 1, Label.X), Move(0, 2, Label.O),
-            Move(1, 0, Label.X), Move(1, 1, Label.O), Move(1, 2, Label.X),
-            Move(2, 0, Label.X), Move(2, 1, Label.O), Move(2, 2, Label.X)
+            Move(0, 0, Label.O),
+            Move(0, 1, Label.X),
+            Move(0, 2, Label.O),
+            Move(1, 0, Label.X),
+            Move(1, 1, Label.O),
+            Move(1, 2, Label.X),
+            Move(2, 0, Label.X),
+            Move(2, 1, Label.O),
+            Move(2, 2, Label.X),
         ]
 
         for move in moves:
@@ -138,9 +149,15 @@ class TestGame():
         game._setup_board()
 
         moves = [
-            Move(0, 0, Label.O), Move(0, 1, Label.O), Move(0, 2, Label.O),
-            Move(1, 0, Label.X), Move(1, 1, Label.X), Move(1, 2, Label.X),
-            Move(2, 0, Label.O), Move(2, 1, Label.NONE), Move(2, 2, Label.NONE)
+            Move(0, 0, Label.O),
+            Move(0, 1, Label.O),
+            Move(0, 2, Label.O),
+            Move(1, 0, Label.X),
+            Move(1, 1, Label.X),
+            Move(1, 2, Label.X),
+            Move(2, 0, Label.O),
+            Move(2, 1, Label.NONE),
+            Move(2, 2, Label.NONE),
         ]
         for move in moves:
             game.process_move(move)

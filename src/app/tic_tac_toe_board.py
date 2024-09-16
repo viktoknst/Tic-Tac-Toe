@@ -22,7 +22,7 @@ class TikTacToeBoard(tk.Tk):
         self.display = tk.Label(
             master=display_frame,
             text="Make the first move!",
-            font=font.Font(size=28, weight="bold")
+            font=font.Font(size=28, weight="bold"),
         )
         self.display.pack()
 
@@ -40,7 +40,7 @@ class TikTacToeBoard(tk.Tk):
                     fg="black",
                     height=2,
                     width=5,
-                    highlightbackground="lightblue"
+                    highlightbackground="lightblue",
                 )
                 self._cells[button] = (row, col)
                 button.bind("<ButtonPress-1>", self.play)
@@ -122,14 +122,13 @@ class TikTacToeBoard(tk.Tk):
 
     async def send_move(self, move):
         if self.websocket:
-            await self.websocket.send(
-                f"{move.row},{move.col},{move.label.value}"
-            )
+            await self.websocket.send
+            (f"{move.row},{move.col},{move.label.value}")
 
     async def receive_move(self):
         while True:
             message = await self.websocket.recv()
-            row, col, label = message.split(',')
+            row, col, label = message.split(",")
             row, col = int(row), int(col)
             label = Label(label)
             move = Move(row, col, label)
@@ -138,6 +137,5 @@ class TikTacToeBoard(tk.Tk):
                 if r == row and c == col:
                     self._update_button(button)
             self._game.toggle_player()
-            self._update_display(
-                f"{self._game.current_player.label.value}'s turn"
-            )
+            self._update_display
+            (f"{self._game.current_player.label.value}'s turn")
