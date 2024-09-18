@@ -1,4 +1,6 @@
-from fastapi import FastAPI, WebSocket
+import uvicorn
+import threading
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from typing import List
 
 app = FastAPI()
@@ -15,9 +17,6 @@ class ConnectionManager:
     def disconnect(self, websocket: WebSocket):
         self.active_connections.remove(websocket)
 
-    async def send_message(self, message: str, websocket: WebSocket):
-        await websocket.send_text(message)
-
     async def broadcast(self, message: str):
         for connection in self.active_connections:
             await connection.send_text(message)
@@ -33,6 +32,21 @@ async def websocket_endpoint(websocket: WebSocket):
         while True:
             data = await websocket.receive_text()
             await manager.broadcast(data)
-    except Exception as e:
-        print(f"Connection closed: {e}")
+    except WebSocketDisconnect:
         manager.disconnect(websocket)
+
+
+@app.get("/")
+def read_root():
+    return {"message": "Tic Tac Toe Server is running"}
+
+
+# Add a function to start the server
+def start_server():
+    uvicorn.run(app, host="0.0.0.0", port=8000)
+
+
+if __name__ == "__main__":
+    # Start the FastAPI server in a new thread
+    server_thread = threading.Thread(target=start_server)
+    server_thread.start()

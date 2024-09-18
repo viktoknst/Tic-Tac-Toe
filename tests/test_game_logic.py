@@ -66,19 +66,19 @@ class TestGame:
         game = TicTacToeGame(board_size=3)
         game._setup_board()
 
-        move = Move(row=0, col=0, label=Label.O)
+        move = Move(row=0, col=0, label=Label.o)
         game.process_move(move)
 
-        assert game._current_moves[0][0].label == Label.O
+        assert game._current_moves[0][0].label == Label.o
         assert not game.has_winner()
 
     def test_process_move_winner(self):
         game = TicTacToeGame(board_size=3)
         game._setup_board()
 
-        game.process_move(Move(row=0, col=0, label=Label.O))
-        game.process_move(Move(row=0, col=1, label=Label.O))
-        game.process_move(Move(row=0, col=2, label=Label.O))
+        game.process_move(Move(row=0, col=0, label=Label.o))
+        game.process_move(Move(row=0, col=1, label=Label.o))
+        game.process_move(Move(row=0, col=2, label=Label.o))
 
         assert game.has_winner() is True
         assert game.winner_combo == [(0, 0), (0, 1), (0, 2)]
@@ -88,15 +88,15 @@ class TestGame:
         game._setup_board()
 
         moves = [
-            Move(0, 0, Label.O),
-            Move(0, 1, Label.X),
-            Move(0, 2, Label.O),
-            Move(1, 0, Label.X),
-            Move(1, 1, Label.O),
-            Move(1, 2, Label.X),
-            Move(2, 0, Label.X),
-            Move(2, 1, Label.O),
-            Move(2, 2, Label.X),
+            Move(0, 0, Label.o),
+            Move(0, 1, Label.x),
+            Move(0, 2, Label.o),
+            Move(1, 0, Label.x),
+            Move(1, 1, Label.o),
+            Move(1, 2, Label.x),
+            Move(2, 0, Label.x),
+            Move(2, 1, Label.o),
+            Move(2, 2, Label.x),
         ]
 
         for move in moves:
@@ -114,9 +114,9 @@ class TestGame:
         game = TicTacToeGame(board_size=3)
         game._setup_board()
 
-        game._current_moves[0][0] = Move(0, 0, Label.X)
-        game._current_moves[0][1] = Move(0, 1, Label.X)
-        game._current_moves[0][2] = Move(0, 2, Label.X)
+        game._current_moves[0][0] = Move(0, 0, Label.x)
+        game._current_moves[0][1] = Move(0, 1, Label.x)
+        game._current_moves[0][2] = Move(0, 2, Label.x)
 
         game._has_winner = True
 
@@ -127,15 +127,15 @@ class TestGame:
         game._setup_board()
 
         moves = [
-            Move(0, 0, Label.O),
-            Move(0, 1, Label.X),
-            Move(0, 2, Label.O),
-            Move(1, 0, Label.X),
-            Move(1, 1, Label.O),
-            Move(1, 2, Label.X),
-            Move(2, 0, Label.X),
-            Move(2, 1, Label.O),
-            Move(2, 2, Label.X),
+            Move(0, 0, Label.o),
+            Move(0, 1, Label.x),
+            Move(0, 2, Label.o),
+            Move(1, 0, Label.x),
+            Move(1, 1, Label.o),
+            Move(1, 2, Label.x),
+            Move(2, 0, Label.x),
+            Move(2, 1, Label.o),
+            Move(2, 2, Label.x),
         ]
 
         for move in moves:
@@ -149,13 +149,13 @@ class TestGame:
         game._setup_board()
 
         moves = [
-            Move(0, 0, Label.O),
-            Move(0, 1, Label.O),
-            Move(0, 2, Label.O),
-            Move(1, 0, Label.X),
-            Move(1, 1, Label.X),
-            Move(1, 2, Label.X),
-            Move(2, 0, Label.O),
+            Move(0, 0, Label.o),
+            Move(0, 1, Label.o),
+            Move(0, 2, Label.o),
+            Move(1, 0, Label.x),
+            Move(1, 1, Label.x),
+            Move(1, 2, Label.x),
+            Move(2, 0, Label.o),
             Move(2, 1, Label.NONE),
             Move(2, 2, Label.NONE),
         ]
