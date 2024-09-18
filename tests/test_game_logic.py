@@ -2,11 +2,8 @@
 File that tests functions from app
 """
 
-import sys
 from src.app.tic_tac_toe_game import TicTacToeGame
 from src.app.definitions import Move, Label
-
-sys.path.append("/home/vkonstantinov/Tic_tac_toe")
 
 
 class TestGame:

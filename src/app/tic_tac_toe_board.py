@@ -1,7 +1,5 @@
 import tkinter as tk
 from tkinter import font
-import asyncio
-import websockets
 from src.app.definitions import Move, Label
 
 
@@ -14,7 +12,6 @@ class TikTacToeBoard(tk.Tk):
         self._create_menu()
         self._create_board_display()
         self._create_board_grid()
-        self.websocket = None
 
     def _create_board_display(self):
         display_frame = tk.Frame(master=self)
@@ -73,7 +70,6 @@ class TikTacToeBoard(tk.Tk):
             move = Move(row, col, self._game.current_player.label)
             self._update_button(clicked_btn)
             self._game.process_move(move)
-            asyncio.run(self.send_move(move))
 
             if self._game.has_winner():
                 self._highlight_cells()
@@ -115,27 +111,3 @@ class TikTacToeBoard(tk.Tk):
             button.config(highlightbackground="lightblue")
             button.config(text="")
             button.config(fg="black")
-
-    async def connect_to_server(self, uri):
-        self.websocket = await websockets.connect(uri)
-        asyncio.create_task(self.receive_move())
-
-    async def send_move(self, move):
-        if self.websocket:
-            await self.websocket.send
-            (f"{move.row},{move.col},{move.label.value}")
-
-    async def receive_move(self):
-        while True:
-            message = await self.websocket.recv()
-            row, col, label = message.split(",")
-            row, col = int(row), int(col)
-            label = Label(label)
-            move = Move(row, col, label)
-            self._game.process_move(move)
-            for button, (r, c) in self._cells.items():
-                if r == row and c == col:
-                    self._update_button(button)
-            self._game.toggle_player()
-            self._update_display
-            (f"{self._game.current_player.label.value}'s turn")
