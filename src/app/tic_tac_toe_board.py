@@ -24,9 +24,13 @@ class TikTacToeBoard(tk.Tk):
         """Poll MongoDB for any updates in the game state."""
         while True:
             sleep(1)  # Poll every second
+
+            # Fetch the last move from MongoDB
             last_move = self._game.load_last_move_from_db()
+
             if last_move:
-                self._update_board_with_move(last_move)
+                # Process the move as if it's from the database
+                self.play(db_move=last_move)
 
     def _update_board_with_move(self, move):
         """Update the board with a move from the database."""
@@ -75,25 +79,37 @@ class TikTacToeBoard(tk.Tk):
         file_menu.add_command(label="Exit", command=quit)
         menu_bar.add_cascade(label="Menu", menu=file_menu)
 
-    def play(self, event):
-        # The play function is the core game controller that handles:
-        #
-        #     - User interaction when clicking on the board.
-        #     - Validating and processing moves.
-        #     - Checking for a win or tie.
-        #     - Updating the game display to reflect the current state
-        #       of the game (next player's turn, a win, or a tie).
+    def _get_button_for_move(self, row, col):
+        for button, (button_row, button_col) in self._cells.items():
+            if button_row == row and button_col == col:
+                return button
+        return None
 
-        clicked_btn = event.widget
-        row, col = self._cells[clicked_btn]
+    def play(self, event=None, db_move=None):
+        # Handle moves from either a button click or from the database
+        if event:
+            # Button click case
+            clicked_btn = event.widget
+            row, col = self._cells[clicked_btn]
+        elif db_move:
+            # Move from database case
+            row, col = db_move.row, db_move.col
+            clicked_btn = self._get_button_for_move(row, col)
+
         is_free_spot = self._game._current_moves[row][col].label == Label.NONE
 
         if is_free_spot and not self._game._has_winner:
-            move = Move(row, col, self._game.current_player.label)
-            self._update_button(clicked_btn)
-            self._game.process_move(move)
+            if event:
+                # For local play (button click)
+                move = Move(row, col, self._game.current_player.label)
+                # Save the move to the database here
+                self._game.save_move_to_db(move)
+            elif db_move:
+                # For moves coming from the database
+                move = Move(row, col, db_move.label)
 
-            self._game.save_move_to_db(move)
+            self._apply_move(move, clicked_btn)  # Apply the move visually
+            self._game.process_move(move)
 
             if self._game.has_winner():
                 self._highlight_cells()
@@ -109,6 +125,26 @@ class TikTacToeBoard(tk.Tk):
             self._game.toggle_player()
             msg = f"{self._game.current_player.label.value}'s turn"
             self._update_display(msg)
+
+    def _apply_move(self, move, clicked_btn=None):
+        """
+        Apply the move to the grid and update the button label and color.
+        """
+        if clicked_btn is None:
+            # Find the button for the move if it came from the database
+            for button, (row, col) in self._cells.items():
+                if row == move.row and col == move.col:
+                    clicked_btn = button
+                    break
+
+        # Update the button and display to reflect the move
+        clicked_btn.config(text=move.label.value)
+
+        # Set the color based on the player label
+        for player in self._game._players:
+            if player.label == move.label:
+                clicked_btn.config(fg=player.color)
+                break
 
     def _update_button(self, clicked_btn):
         # Updates the buttons so they show their new label
