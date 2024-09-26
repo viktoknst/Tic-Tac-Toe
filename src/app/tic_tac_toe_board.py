@@ -20,6 +20,11 @@ class TikTacToeBoard(tk.Tk):
         )
         thread.start()
 
+    def destroy(self):
+        """Override the destroy method to clear the database on exit."""
+        self._game.collection.delete_many({})  # Clear the database
+        super().destroy()
+
     def _poll_database_for_updates(self):
         """Poll MongoDB for any updates in the game state."""
         while True:
