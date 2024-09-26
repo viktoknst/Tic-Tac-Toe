@@ -1,7 +1,9 @@
 from src.app.definitions import DEFAULT_PLAYERS, BOARD_SIZE, Move, Label
 from itertools import cycle
+from pymongo import MongoClient
 
 
+# The TicTacToeGame class is responsible for managing the game state
 class TicTacToeGame:
     def __init__(self, players=DEFAULT_PLAYERS, board_size=BOARD_SIZE):
         self._players = cycle(players)
@@ -12,6 +14,38 @@ class TicTacToeGame:
         self._has_winner = False
         self._winning_combos = []
         self._setup_board()
+
+        self.mongo_client = MongoClient(
+            (
+                "mongodb+srv://vikto:pass@cluster0.4hp7yau.mongodb.net/"
+                "?retryWrites=true&w=majority&appName=Cluster0"
+            )
+        )
+        self.db = self.mongo_client["tic_tac_toe_db"]
+        self.collection = self.db["game_state"]
+
+    def save_move_to_db(self, move):
+        """Save the move to the MongoDB database."""
+        self.collection.replace_one(
+            {"_id": 1},  # Use a constant ID to always replace the last move
+            {
+                "row": move.row,
+                "col": move.col,
+                "label": move.label.value,
+            },
+            upsert=True
+        )
+
+    def load_last_move_from_db(self):
+        """Load the last move from the MongoDB database."""
+        last_move = self.collection.find_one({"_id": 1})
+        if last_move:
+            return Move(
+                row=last_move["row"],
+                col=last_move["col"],
+                label=Label(last_move["label"])
+            )
+        return None
 
     def _setup_board(self):
         self._current_moves = []
@@ -76,6 +110,8 @@ class TicTacToeGame:
     def reset_game(self):
         # Resets the board and win condition values such as _has_winner
         # and winner_combo and sets new clear values to row_content.
+        self.collection.delete_many({})
+
         for row, row_content in enumerate(self._current_moves):
             for col, _ in enumerate(row_content):
                 row_content[col] = Move(row, col)

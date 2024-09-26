@@ -1,4 +1,6 @@
 import tkinter as tk
+import threading
+from time import sleep
 from tkinter import font
 from src.app.definitions import Move, Label
 
@@ -12,6 +14,26 @@ class TikTacToeBoard(tk.Tk):
         self._create_menu()
         self._create_board_display()
         self._create_board_grid()
+
+        thread = threading.Thread(
+            target=self._poll_database_for_updates, daemon=True
+        )
+        thread.start()
+
+    def _poll_database_for_updates(self):
+        """Poll MongoDB for any updates in the game state."""
+        while True:
+            sleep(1)  # Poll every second
+            last_move = self._game.load_last_move_from_db()
+            if last_move:
+                self._update_board_with_move(last_move)
+
+    def _update_board_with_move(self, move):
+        """Update the board with a move from the database."""
+        for button, (row, col) in self._cells.items():
+            if (row, col) == (move.row, move.col):
+                button.config(text=move.label.value)
+                break
 
     def _create_board_display(self):
         display_frame = tk.Frame(master=self)
@@ -70,6 +92,8 @@ class TikTacToeBoard(tk.Tk):
             move = Move(row, col, self._game.current_player.label)
             self._update_button(clicked_btn)
             self._game.process_move(move)
+
+            self._game.save_move_to_db(move)
 
             if self._game.has_winner():
                 self._highlight_cells()
