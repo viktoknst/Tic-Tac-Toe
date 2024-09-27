@@ -1,9 +1,6 @@
 .env
 *.log
 
-/home/vkonstantinov/Tic_tac_toe/src/__pycache__/
-
-venv/
-.venv/
-
-/home/vkonstantinov/Tic_tac_toe/src/app/__pycache__/
+__pycache__/
+*.pyc
+*.pyo

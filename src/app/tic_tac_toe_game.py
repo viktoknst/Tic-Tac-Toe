@@ -1,6 +1,8 @@
+import os
 from src.app.definitions import DEFAULT_PLAYERS, BOARD_SIZE, Move, Label
 from itertools import cycle
 from pymongo import MongoClient
+from dotenv import load_dotenv
 
 
 # The TicTacToeGame class is responsible for managing the game state
@@ -14,14 +16,12 @@ class TicTacToeGame:
         self._has_winner = False
         self._winning_combos = []
         self._setup_board()
+        load_dotenv()
 
-        self.mongo_client = MongoClient(
-            (
-                # TODO: use environment variables
-                "mongodb+srv://vikto:pass@cluster0.4hp7yau.mongodb.net/"
-                "?retryWrites=true&w=majority&appName=Cluster0"
-            )
-        )
+        # MongoDB setup
+        MONGODB_URI = os.getenv("MONGODB_URI")
+
+        self.mongo_client = MongoClient(MONGODB_URI)
         self.db = self.mongo_client["tic_tac_toe_db"]
         self.collection = self.db["game_state"]
 
