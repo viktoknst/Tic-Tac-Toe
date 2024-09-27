@@ -43,6 +43,7 @@ class TikTacToeBoard(tk.Tk):
             button.config(text=move.label.value)
 
     def _create_board_display(self):
+        """Create the display for the game."""
         display_frame = tk.Frame(master=self)
         display_frame.pack(fill=tk.X)
         self.display = tk.Label(
@@ -53,6 +54,7 @@ class TikTacToeBoard(tk.Tk):
         self.display.pack()
 
     def _create_board_grid(self):
+        """Create the game board grid."""
         grid_frame = tk.Frame(master=self)
         grid_frame.pack()
         for row in range(self._game.board_size):
@@ -73,7 +75,7 @@ class TikTacToeBoard(tk.Tk):
                 button.grid(row=row, column=col, padx=5, pady=5, sticky="nsew")
 
     def _create_menu(self):
-        # Creates the drop down menu
+        """Create the menu bar."""
         menu_bar = tk.Menu(master=self)
         self.config(menu=menu_bar)
         file_menu = tk.Menu(master=menu_bar)
@@ -83,14 +85,14 @@ class TikTacToeBoard(tk.Tk):
         menu_bar.add_cascade(label="Menu", menu=file_menu)
 
     def _get_button_for_move(self, row, col):
+        """Get the button for a given move."""
         for button, (button_row, button_col) in self._cells.items():
             if button_row == row and button_col == col:
                 return button
         return None
 
     def play(self, event=None, db_move=None):
-        # The play function is responsible for handling the game logic.
-        # Handle moves from either a button click or from the database
+        """Play the game. Respond to a button click or a database move."""
         if event:
             clicked_btn = event.widget
             row, col = self._cells[clicked_btn]
@@ -139,19 +141,18 @@ class TikTacToeBoard(tk.Tk):
                 break
 
     def _update_display(self, msg, color="black"):
-        # Updates messages
+        """Update the display with a message."""
         self.display["text"] = msg
         self.display["fg"] = color
 
     def _highlight_cells(self):
-        # At the end of the game the winning cells are highlighted.
-        # This function is responsible for that.
+        """Highlight the winning combination."""
         for button, coordinates in self._cells.items():
             if coordinates in self._game.get_winner_combo():
                 button.config(highlightbackground="black")
 
     def reset_board(self):
-        # Resets the board after "Play again" has been selected in the menu.
+        """Reset the board."""
         self._game.reset_game()
         self._update_display(msg="Ready?")
         for button in self._cells.keys():

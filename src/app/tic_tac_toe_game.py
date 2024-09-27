@@ -54,6 +54,7 @@ class TicTacToeGame:
         return None
 
     def _setup_board(self):
+        """Setup the game board."""
         self._current_moves = []
         for row in range(self.board_size):
             current_row = []
@@ -63,6 +64,7 @@ class TicTacToeGame:
         self._winning_combos = self._get_winning_combos()
 
     def _get_winning_combos(self):
+        """Get all possible winning combinations."""
         rows = []
         for row in self._current_moves:
             current_row = []
@@ -83,9 +85,7 @@ class TicTacToeGame:
         return rows + columns + [first_diagonal, second_diagonal]
 
     def process_move(self, move):
-        # The process_move function performs several key tasks:
-        # Update the board, check all possible winning combinations
-        # and update the game state.
+        """Process a move and check if there is a winner."""
         row, col = move.row, move.col
         self._current_moves[row][col] = move
         for combo in self._winning_combos:
@@ -98,13 +98,15 @@ class TicTacToeGame:
                 break
 
     def has_winner(self):
+        """Check if there is a winner."""
         return self._has_winner
 
     def is_spot_free(self, row, col):
+        """Check if a spot is free."""
         return self._current_moves[row][col].label == Label.NONE
 
     def is_tied(self):
-        # Checks if the game has finished in a tie
+        """Check if the game is tied."""
         no_winner = not self._has_winner
         played_moves = []
         for row in self._current_moves:
@@ -114,20 +116,23 @@ class TicTacToeGame:
         return no_winner and all(played_moves)
 
     def toggle_player(self):
+        """Toggle the current player."""
         self.current_player = next(self._players)
 
     def get_players(self):
+        """Get the players."""
         return DEFAULT_PLAYERS
 
     def get_winner_combo(self):
+        """Get the winning combination."""
         return self.winner_combo
 
     def create_move(self, row, col):
+        """Create a move."""
         return Move(row, col, self.current_player.label)
 
     def reset_game(self):
-        # Resets the board and win condition values such as _has_winner
-        # and winner_combo and sets new clear values to row_content.
+        """Reset the game."""
         # TODO: use id system to delete specific game
         self.clear_database()
         self._setup_board()
