@@ -17,6 +17,7 @@ class TicTacToeGame:
 
         self.mongo_client = MongoClient(
             (
+                # TODO: use environment variables
                 "mongodb+srv://vikto:pass@cluster0.4hp7yau.mongodb.net/"
                 "?retryWrites=true&w=majority&appName=Cluster0"
             )
@@ -24,9 +25,14 @@ class TicTacToeGame:
         self.db = self.mongo_client["tic_tac_toe_db"]
         self.collection = self.db["game_state"]
 
+    def clear_database(self):
+        """Clear the MongoDB database."""
+        self.collection.delete_many({})
+
     def save_move_to_db(self, move):
         """Save the move to the MongoDB database."""
         self.collection.replace_one(
+            # TODO: use ids to host different games
             {"_id": 1},  # Use a constant ID to always replace the last move
             {
                 "row": move.row,
@@ -94,6 +100,9 @@ class TicTacToeGame:
     def has_winner(self):
         return self._has_winner
 
+    def is_spot_free(self, row, col):
+        return self._current_moves[row][col].label == Label.NONE
+
     def is_tied(self):
         # Checks if the game has finished in a tie
         no_winner = not self._has_winner
@@ -107,14 +116,19 @@ class TicTacToeGame:
     def toggle_player(self):
         self.current_player = next(self._players)
 
+    def get_players(self):
+        return DEFAULT_PLAYERS
+
+    def get_winner_combo(self):
+        return self.winner_combo
+
+    def create_move(self, row, col):
+        return Move(row, col, self.current_player.label)
+
     def reset_game(self):
         # Resets the board and win condition values such as _has_winner
         # and winner_combo and sets new clear values to row_content.
-        self.collection.delete_many({})
-
-        for row, row_content in enumerate(self._current_moves):
-            for col, _ in enumerate(row_content):
-                row_content[col] = Move(row, col)
-
+        # TODO: use id system to delete specific game
+        self.clear_database()
+        self._setup_board()
         self._has_winner = False
-        self.winner_combo = []

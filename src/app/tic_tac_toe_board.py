@@ -2,9 +2,10 @@ import tkinter as tk
 import threading
 from time import sleep
 from tkinter import font
-from src.app.definitions import Move, Label
+from src.app.definitions import Move
 
 
+# The TikTacToeBoard class is responsible for managing the game display
 class TikTacToeBoard(tk.Tk):
     def __init__(self, game):
         super().__init__()
@@ -22,27 +23,24 @@ class TikTacToeBoard(tk.Tk):
 
     def destroy(self):
         """Override the destroy method to clear the database on exit."""
-        self._game.collection.delete_many({})  # Clear the database
+        self._game.clear_database()  # Clear the database
         super().destroy()
 
     def _poll_database_for_updates(self):
         """Poll MongoDB for any updates in the game state."""
+        # TODO: optimise this method to only fetch the last move
+        # when two players are playing
         while True:
-            sleep(1)  # Poll every second
-
-            # Fetch the last move from MongoDB
+            sleep(1)
             last_move = self._game.load_last_move_from_db()
-
             if last_move:
-                # Process the move as if it's from the database
                 self.play(db_move=last_move)
 
     def _update_board_with_move(self, move):
         """Update the board with a move from the database."""
-        for button, (row, col) in self._cells.items():
-            if (row, col) == (move.row, move.col):
-                button.config(text=move.label.value)
-                break
+        button = self._get_button_for_move(move.row, move.col)
+        if button:
+            button.config(text=move.label.value)
 
     def _create_board_display(self):
         display_frame = tk.Frame(master=self)
@@ -91,29 +89,25 @@ class TikTacToeBoard(tk.Tk):
         return None
 
     def play(self, event=None, db_move=None):
+        # The play function is responsible for handling the game logic.
         # Handle moves from either a button click or from the database
         if event:
-            # Button click case
             clicked_btn = event.widget
             row, col = self._cells[clicked_btn]
         elif db_move:
-            # Move from database case
             row, col = db_move.row, db_move.col
             clicked_btn = self._get_button_for_move(row, col)
 
-        is_free_spot = self._game._current_moves[row][col].label == Label.NONE
+        is_free_spot = self._game.is_spot_free(row, col)
 
-        if is_free_spot and not self._game._has_winner:
+        if is_free_spot and not self._game.has_winner():
             if event:
-                # For local play (button click)
-                move = Move(row, col, self._game.current_player.label)
-                # Save the move to the database here
+                move = self._game.create_move(row, col)
                 self._game.save_move_to_db(move)
             elif db_move:
-                # For moves coming from the database
                 move = Move(row, col, db_move.label)
 
-            self._apply_move(move, clicked_btn)  # Apply the move visually
+            self._apply_move(move, clicked_btn)
             self._game.process_move(move)
 
             if self._game.has_winner():
@@ -136,25 +130,13 @@ class TikTacToeBoard(tk.Tk):
         Apply the move to the grid and update the button label and color.
         """
         if clicked_btn is None:
-            # Find the button for the move if it came from the database
-            for button, (row, col) in self._cells.items():
-                if row == move.row and col == move.col:
-                    clicked_btn = button
-                    break
-
-        # Update the button and display to reflect the move
+            clicked_btn = self._get_button_for_move(move.row, move.col)
         clicked_btn.config(text=move.label.value)
 
-        # Set the color based on the player label
-        for player in self._game._players:
+        for player in self._game.get_players():
             if player.label == move.label:
                 clicked_btn.config(fg=player.color)
                 break
-
-    def _update_button(self, clicked_btn):
-        # Updates the buttons so they show their new label
-        clicked_btn.config(text=self._game.current_player.label.value)
-        clicked_btn.config(fg=self._game.current_player.color)
 
     def _update_display(self, msg, color="black"):
         # Updates messages
@@ -165,7 +147,7 @@ class TikTacToeBoard(tk.Tk):
         # At the end of the game the winning cells are highlighted.
         # This function is responsible for that.
         for button, coordinates in self._cells.items():
-            if coordinates in self._game.winner_combo:
+            if coordinates in self._game.get_winner_combo():
                 button.config(highlightbackground="black")
 
     def reset_board(self):
