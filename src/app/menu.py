@@ -5,14 +5,14 @@ from src.app.tic_tac_toe_board import TikTacToeBoard
 
 def start_singleplayer():
     """Starts the singleplayer game (for now, same as multiplayer)."""
-    game = TicTacToeGame()
+    game = TicTacToeGame(bot_enabled=True)
     board = TikTacToeBoard(game)
     board.mainloop()
 
 
 def start_multiplayer():
     """Starts the multiplayer game."""
-    game = TicTacToeGame()
+    game = TicTacToeGame(bot_enabled=False)
     board = TikTacToeBoard(game)
     board.mainloop()
 

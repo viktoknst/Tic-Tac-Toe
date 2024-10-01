@@ -1,26 +1,36 @@
 import os
-from src.app.definitions import DEFAULT_PLAYERS, BOARD_SIZE, Move, Label
 from itertools import cycle
+from src.app.definitions import DEFAULT_PLAYERS, BOARD_SIZE, Move, Label
+from src.app.bot import Bot  # Import the bot
 from pymongo import MongoClient
 from dotenv import load_dotenv
 
 
 # The TicTacToeGame class is responsible for managing the game state
 class TicTacToeGame:
-    def __init__(self, players=DEFAULT_PLAYERS, board_size=BOARD_SIZE):
-        self._players = cycle(players)
+    def __init__(self, players=DEFAULT_PLAYERS, board_size=BOARD_SIZE,
+                 bot_enabled=False):
+        self.bot_enabled = bot_enabled  # Determine if playing against a bot
+        self.bot = Bot(self, label=Label.o) if bot_enabled else None
+
+        if bot_enabled:
+            self.current_player = players[1]
+            self._players = cycle([self.bot, self.current_player])
+        else:
+            self._players = cycle(players)
+            self.current_player = next(self._players)
+
         self.board_size = board_size
-        self.current_player = next(self._players)
         self.winner_combo = []
         self._current_moves = []
         self._has_winner = False
         self._winning_combos = []
+
         self._setup_board()
         load_dotenv()
 
-        # MongoDB setup
+        # MongoDB setup (not used in single-player)
         MONGODB_URI = os.getenv("MONGODB_URI")
-
         self.mongo_client = MongoClient(MONGODB_URI)
         self.db = self.mongo_client["tic_tac_toe_db"]
         self.collection = self.db["game_state"]
@@ -32,7 +42,6 @@ class TicTacToeGame:
     def save_move_to_db(self, move):
         """Save the move to the MongoDB database."""
         self.collection.replace_one(
-            # TODO: use ids to host different games
             {"_id": 1},  # Use a constant ID to always replace the last move
             {
                 "row": move.row,
@@ -133,7 +142,12 @@ class TicTacToeGame:
 
     def reset_game(self):
         """Reset the game."""
-        # TODO: use id system to delete specific game
         self.clear_database()
         self._setup_board()
-        self._has_winner = False
+
+    def play_bot_move(self):
+        """Make the bot play its move."""
+        if self.bot_enabled and self.current_player.label == Label.o:
+            move = self.bot.make_move()
+            return move
+        return None

@@ -2,7 +2,7 @@ import tkinter as tk
 import threading
 from time import sleep
 from tkinter import font
-from src.app.definitions import Move
+from src.app.definitions import Move, Label
 
 
 # The TikTacToeBoard class is responsible for managing the game display
@@ -16,10 +16,18 @@ class TikTacToeBoard(tk.Tk):
         self._create_board_display()
         self._create_board_grid()
 
-        thread = threading.Thread(
-            target=self._poll_database_for_updates, daemon=True
-        )
-        thread.start()
+        if self._game.bot_enabled and \
+           self._game.current_player.label == Label.o:
+            bot_move = self._game.bot.make_move()
+            if bot_move:  # Ensure a valid move was generated
+                self.play(db_move=bot_move)
+
+        # Multiplayer-specific threading for polling updates
+        if not self._game.bot_enabled:
+            thread = threading.Thread(
+                target=self._poll_database_for_updates, daemon=True
+            )
+            thread.start()
 
     def destroy(self):
         """Override the destroy method to clear the database on exit."""
@@ -124,6 +132,13 @@ class TikTacToeBoard(tk.Tk):
                 return
 
             self._game.toggle_player()
+
+            if self._game.bot and \
+               self._game.current_player.label == self._game.bot.label:
+                bot_move = self._game.bot.make_move()
+                if bot_move:  # Ensure a valid move was generated
+                    self.play(db_move=bot_move)
+
             msg = f"{self._game.current_player.label.value}'s turn"
             self._update_display(msg)
 
